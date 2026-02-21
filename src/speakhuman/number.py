@@ -31,7 +31,7 @@ def _format_not_finite(value: float) -> str:
     return ""
 
 
-def ordinal(value: NumberOrString, gender: str = "male") -> str:
+def _py_ordinal(value: NumberOrString, gender: str = "male") -> str:
     """Converts an integer to its ordinal as a string.
 
     For example, 1 is "1st", 2 is "2nd", 3 is "3rd", etc. Works for any integer or
@@ -107,7 +107,7 @@ def ordinal(value: NumberOrString, gender: str = "male") -> str:
     return f"{value}{t[value % 10]}"
 
 
-def intcomma(value: NumberOrString, ndigits: int | None = None) -> str:
+def _py_intcomma(value: NumberOrString, ndigits: int | None = None) -> str:
     """Converts an integer to a string containing commas every three digits.
 
     For example, 3000 becomes "3,000" and 45000 becomes "45,000". To maintain some
@@ -192,7 +192,7 @@ human_powers = (
 )
 
 
-def intword(value: NumberOrString, format: str = "%.1f") -> str:
+def _py_intword(value: NumberOrString, format: str = "%.1f") -> str:
     """Converts a large integer to a friendly text representation.
 
     Works best for numbers over 1 million. For example, 1_000_000 becomes "1.0 million",
@@ -266,7 +266,7 @@ def intword(value: NumberOrString, format: str = "%.1f") -> str:
     return f"{negative_prefix}{number} {unit}"
 
 
-def apnumber(value: NumberOrString) -> str:
+def _py_apnumber(value: NumberOrString) -> str:
     """Converts an integer to Associated Press style.
 
     Examples:
@@ -318,7 +318,7 @@ def apnumber(value: NumberOrString) -> str:
     )[value]
 
 
-def fractional(value: NumberOrString) -> str:
+def _py_fractional(value: NumberOrString) -> str:
     """Convert to fractional number.
 
     There will be some cases where one might not want to show ugly decimal places for
@@ -382,7 +382,7 @@ def fractional(value: NumberOrString) -> str:
     return f"{whole_number:.0f} {numerator:.0f}/{denominator:.0f}"
 
 
-def scientific(value: NumberOrString, precision: int = 2) -> str:
+def _py_scientific(value: NumberOrString, precision: int = 2) -> str:
     """Return number in string scientific notation z.wq x 10ⁿ.
 
     Examples:
@@ -528,7 +528,7 @@ def clamp(
     raise ValueError(msg)
 
 
-def metric(value: float, unit: str = "", precision: int = 3) -> str:
+def _py_metric(value: float, unit: str = "", precision: int = 3) -> str:
     """Return a value with a metric SI unit-prefix appended.
 
     Examples:
@@ -586,3 +586,55 @@ def metric(value: float, unit: str = "", precision: int = 3) -> str:
         space = " "
 
     return f"{value_}{space}{ordinal_}{unit}"
+
+
+def _is_english_locale() -> bool:
+    """Check if the current locale is English (or unset)."""
+    from .i18n import _CURRENT
+
+    try:
+        locale = _CURRENT.locale
+    except AttributeError:
+        return True
+    return locale is None or str(locale).startswith("en")
+
+
+try:
+    from speakhuman._speakhuman_rs import (
+        apnumber as _rs_apnumber,
+        fractional,
+        intcomma as _rs_intcomma,
+        intword as _rs_intword,
+        metric,
+        ordinal as _rs_ordinal,
+        scientific,
+    )
+
+    def ordinal(value: NumberOrString, gender: str = "male") -> str:  # noqa: D103
+        if _is_english_locale():
+            return _rs_ordinal(value, gender)
+        return _py_ordinal(value, gender)
+
+    def intcomma(value: NumberOrString, ndigits: int | None = None) -> str:  # noqa: D103
+        if _is_english_locale():
+            return _rs_intcomma(value, ndigits)
+        return _py_intcomma(value, ndigits)
+
+    def intword(value: NumberOrString, format: str = "%.1f") -> str:  # noqa: D103
+        if _is_english_locale():
+            return _rs_intword(value, format)
+        return _py_intword(value, format)
+
+    def apnumber(value: NumberOrString) -> str:  # noqa: D103
+        if _is_english_locale():
+            return _rs_apnumber(value)
+        return _py_apnumber(value)
+
+except ImportError:
+    ordinal = _py_ordinal
+    intcomma = _py_intcomma
+    intword = _py_intword
+    apnumber = _py_apnumber
+    fractional = _py_fractional
+    scientific = _py_scientific
+    metric = _py_metric

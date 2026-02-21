@@ -1,9 +1,12 @@
 [package]
-name = "speakhuman"
+name = "speakhuman-core"
 version = "0.1.0"
 edition = "2021"
 description = "Speakhuman - humanizing functions for numbers, dates, times, and file sizes - Rust port of Python humanize"
 license = "MIT"
+
+[lib]
+name = "speakhuman"
 
 [dependencies]
 chrono = "0.4"

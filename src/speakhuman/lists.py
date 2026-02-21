@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 __all__ = ["natural_list"]
 
 
-def natural_list(items: list[Any]) -> str:
+def _py_natural_list(items: list[Any]) -> str:
     """Natural list.
 
     Convert a list of items into a human-readable string with commas and 'and'.
@@ -34,3 +34,9 @@ def natural_list(items: list[Any]) -> str:
         return f"{str(items[0])} and {str(items[1])}"
     else:
         return ", ".join(str(item) for item in items[:-1]) + f" and {str(items[-1])}"
+
+
+try:
+    from speakhuman._speakhuman_rs import natural_list
+except ImportError:
+    natural_list = _py_natural_list

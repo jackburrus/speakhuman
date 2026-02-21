@@ -92,7 +92,7 @@ def _date_and_delta(
     return date, _abs_timedelta(delta)
 
 
-def naturaldelta(
+def _py_naturaldelta(
     value: dt.timedelta | float,
     months: bool = True,
     minimum_unit: str = "seconds",
@@ -308,7 +308,7 @@ def _convert_aware_datetime(
     return value
 
 
-def naturalday(value: dt.date | dt.datetime, format: str = "%b %d") -> str:
+def _py_naturalday(value: dt.date | dt.datetime, format: str = "%b %d") -> str:
     """Return a natural day.
 
     For date values that are tomorrow, today or yesterday compared to
@@ -340,7 +340,7 @@ def naturalday(value: dt.date | dt.datetime, format: str = "%b %d") -> str:
     return value.strftime(format)
 
 
-def naturaldate(value: dt.date | dt.datetime) -> str:
+def _py_naturaldate(value: dt.date | dt.datetime) -> str:
     """Like `naturalday`, but append a year for dates more than ~five months away."""
     import datetime as dt
 
@@ -448,7 +448,7 @@ def _suppress_lower_units(min_unit: Unit, suppress: Iterable[Unit]) -> set[Unit]
     return suppress
 
 
-def precisedelta(
+def _py_precisedelta(
     value: dt.timedelta | float | None,
     minimum_unit: str = "seconds",
     suppress: Iterable[str] = (),
@@ -670,3 +670,67 @@ def _rounding_by_fmt(format: str, value: float) -> float | int:
         value = float(result)
 
     return value
+
+
+# ---------------------------------------------------------------------------
+# Rust acceleration dispatch
+# ---------------------------------------------------------------------------
+
+def _is_english_locale() -> bool:
+    """Check if the current locale is English (or unset)."""
+    from .i18n import _CURRENT
+
+    try:
+        locale = _CURRENT.locale
+    except AttributeError:
+        return True
+    return locale is None or str(locale).startswith("en")
+
+
+# naturalday and naturaldate always use Python because they compare against
+# dt.date.today() which must be mockable (e.g. by freezegun in tests).
+naturalday = _py_naturalday
+naturaldate = _py_naturaldate
+
+try:
+    from speakhuman._speakhuman_rs import (
+        naturaldelta as _rs_naturaldelta,
+        precisedelta as _rs_precisedelta,
+    )
+
+    def naturaldelta(  # noqa: D103
+        value: dt.timedelta | float,
+        months: bool = True,
+        minimum_unit: str = "seconds",
+    ) -> str:
+        if not _is_english_locale():
+            return _py_naturaldelta(value, months, minimum_unit)
+        # Fall back to Python for non-standard minimum_unit (Rust returns
+        # error strings instead of raising ValueError).
+        if minimum_unit not in ("seconds", "milliseconds", "microseconds"):
+            return _py_naturaldelta(value, months, minimum_unit)
+        try:
+            return _rs_naturaldelta(value, months, minimum_unit)
+        except (TypeError, OverflowError):
+            return _py_naturaldelta(value, months, minimum_unit)
+
+    def precisedelta(  # noqa: D103
+        value: dt.timedelta | float | None,
+        minimum_unit: str = "seconds",
+        suppress: Iterable[str] = (),
+        format: str = "%0.2f",
+    ) -> str:
+        if not _is_english_locale():
+            return _py_precisedelta(value, minimum_unit, suppress, format)
+        # Fall back to Python when suppress is used, since Rust returns error
+        # strings instead of raising ValueError for bogus combinations.
+        if suppress:
+            return _py_precisedelta(value, minimum_unit, suppress, format)
+        try:
+            return _rs_precisedelta(value, minimum_unit, list(suppress), format)
+        except (TypeError, OverflowError):
+            return _py_precisedelta(value, minimum_unit, suppress, format)
+
+except ImportError:
+    naturaldelta = _py_naturaldelta
+    precisedelta = _py_precisedelta

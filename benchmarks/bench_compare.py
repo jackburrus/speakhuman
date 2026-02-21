@@ -1,164 +1,257 @@
 #!/usr/bin/env python3
-"""Benchmark comparison: Python speakhuman vs Rust speakhuman.
+"""Benchmark comparison: Pure-Python vs Rust-accelerated speakhuman.
 
-Runs identical workloads through both implementations and displays
-a side-by-side performance comparison with ASCII bar charts.
+Runs identical workloads through both the pure-Python implementation and
+the Rust-accelerated version (via PyO3), displaying a side-by-side
+performance comparison with ASCII bar charts.
 
 Usage:
+    maturin develop --release
     python benchmarks/bench_compare.py
 
 Prerequisites:
-    - Python speakhuman must be installed (pip install -e .)
-    - Rust speakhuman must be compiled (cd speakhuman-rs && cargo build --release)
+    - speakhuman must be installed with Rust extension (maturin develop --release)
 """
 
 from __future__ import annotations
 
-import json
-import os
-import subprocess
+import datetime as dt
 import sys
 import time
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Benchmark definitions
-# Each benchmark is (name, callable_that_runs_N_iterations)
-# ---------------------------------------------------------------------------
-
 ITERATIONS = 100_000
 REPO_ROOT = Path(__file__).resolve().parent.parent
-RUST_BENCH_BIN = REPO_ROOT / "speakhuman-rs" / "target" / "release" / "speakhuman-bench"
+
+sys.path.insert(0, str(REPO_ROOT / "src"))
 
 
-def _import_humanize():
-    sys.path.insert(0, str(REPO_ROOT / "src"))
-    import speakhuman
-    return speakhuman
+def _check_rust_available() -> bool:
+    """Check if Rust extension is available."""
+    try:
+        import speakhuman._speakhuman_rs  # noqa: F401
+
+        return True
+    except ImportError:
+        return False
 
 
-def bench_python() -> dict[str, float]:
-    """Run all benchmarks through the Python implementation."""
-    h = _import_humanize()
-    import datetime as dt
+# ---------------------------------------------------------------------------
+# Pure-Python benchmark (bypass Rust, call _py_* functions directly)
+# ---------------------------------------------------------------------------
+
+
+def bench_pure_python() -> dict[str, float]:
+    """Run all benchmarks through the pure-Python implementation."""
+    from speakhuman.filesize import _py_naturalsize
+    from speakhuman.lists import _py_natural_list
+    from speakhuman.number import (
+        _py_apnumber,
+        _py_fractional,
+        _py_intcomma,
+        _py_intword,
+        _py_metric,
+        _py_ordinal,
+        _py_scientific,
+    )
+    from speakhuman.time import (
+        _py_naturaldelta,
+        _py_precisedelta,
+    )
 
     results = {}
 
     # --- naturalsize ---
     start = time.perf_counter()
     for _ in range(ITERATIONS):
-        h.naturalsize(3_000_000)
-        h.naturalsize(1024 * 31, True)
-        h.naturalsize(3000, False, True)
+        _py_naturalsize(3_000_000)
+        _py_naturalsize(1024 * 31, True)
+        _py_naturalsize(3000, False, True)
     results["naturalsize"] = time.perf_counter() - start
 
     # --- intcomma ---
     start = time.perf_counter()
     for _ in range(ITERATIONS):
-        h.intcomma(1_000_000)
-        h.intcomma(1_234_567.25)
-        h.intcomma("10311")
+        _py_intcomma(1_000_000)
+        _py_intcomma(1_234_567.25)
+        _py_intcomma("10311")
     results["intcomma"] = time.perf_counter() - start
 
     # --- intword ---
     start = time.perf_counter()
     for _ in range(ITERATIONS):
-        h.intword("1000000")
-        h.intword("1200000000")
-        h.intword("8100000000000000000000000000000000")
+        _py_intword("1000000")
+        _py_intword("1200000000")
+        _py_intword("8100000000000000000000000000000000")
     results["intword"] = time.perf_counter() - start
 
     # --- ordinal ---
     start = time.perf_counter()
     for _ in range(ITERATIONS):
-        h.ordinal(1)
-        h.ordinal(103)
-        h.ordinal(111)
+        _py_ordinal(1)
+        _py_ordinal(103)
+        _py_ordinal(111)
     results["ordinal"] = time.perf_counter() - start
 
     # --- scientific ---
     start = time.perf_counter()
     for _ in range(ITERATIONS):
-        h.scientific(1000)
-        h.scientific(0.3)
-        h.scientific(5781651000)
+        _py_scientific(1000)
+        _py_scientific(0.3)
+        _py_scientific(5781651000)
     results["scientific"] = time.perf_counter() - start
 
     # --- fractional ---
     start = time.perf_counter()
     for _ in range(ITERATIONS):
-        h.fractional(0.3)
-        h.fractional(1.3)
-        h.fractional(1 / 3)
+        _py_fractional(0.3)
+        _py_fractional(1.3)
+        _py_fractional(1 / 3)
     results["fractional"] = time.perf_counter() - start
 
     # --- metric ---
     start = time.perf_counter()
     for _ in range(ITERATIONS):
-        h.metric(1500, "V")
-        h.metric(2e8, "W")
-        h.metric(220e-6, "F")
+        _py_metric(1500, "V")
+        _py_metric(2e8, "W")
+        _py_metric(220e-6, "F")
     results["metric"] = time.perf_counter() - start
 
     # --- apnumber ---
     start = time.perf_counter()
     for _ in range(ITERATIONS):
-        h.apnumber(0)
-        h.apnumber(5)
-        h.apnumber(10)
+        _py_apnumber(0)
+        _py_apnumber(5)
+        _py_apnumber(10)
     results["apnumber"] = time.perf_counter() - start
 
     # --- naturaldelta ---
     start = time.perf_counter()
     for _ in range(ITERATIONS):
-        h.naturaldelta(dt.timedelta(days=7))
-        h.naturaldelta(dt.timedelta(seconds=30))
-        h.naturaldelta(dt.timedelta(days=500))
+        _py_naturaldelta(dt.timedelta(days=7))
+        _py_naturaldelta(dt.timedelta(seconds=30))
+        _py_naturaldelta(dt.timedelta(days=500))
     results["naturaldelta"] = time.perf_counter() - start
 
     # --- natural_list ---
     start = time.perf_counter()
     for _ in range(ITERATIONS):
-        h.natural_list(["one", "two", "three"])
-        h.natural_list(["one", "two"])
-        h.natural_list(["one"])
+        _py_natural_list(["one", "two", "three"])
+        _py_natural_list(["one", "two"])
+        _py_natural_list(["one"])
     results["natural_list"] = time.perf_counter() - start
 
     # --- precisedelta ---
     start = time.perf_counter()
     for _ in range(ITERATIONS):
-        h.precisedelta(dt.timedelta(seconds=3633, days=2, microseconds=123000))
-        h.precisedelta(dt.timedelta(seconds=1))
-        h.precisedelta(dt.timedelta(days=370, hours=4, seconds=3))
+        _py_precisedelta(dt.timedelta(seconds=3633, days=2, microseconds=123000))
+        _py_precisedelta(dt.timedelta(seconds=1))
+        _py_precisedelta(dt.timedelta(days=370, hours=4, seconds=3))
     results["precisedelta"] = time.perf_counter() - start
 
     return results
 
 
-def bench_rust() -> dict[str, float]:
-    """Run all benchmarks through the Rust implementation."""
-    # Build the bench binary if needed
-    build_result = subprocess.run(
-        ["cargo", "build", "--release", "--bin", "speakhuman-bench"],
-        cwd=REPO_ROOT / "speakhuman-rs",
-        capture_output=True,
-        text=True,
-    )
-    if build_result.returncode != 0:
-        print(f"Failed to build Rust benchmark binary:\n{build_result.stderr}")
-        sys.exit(1)
+# ---------------------------------------------------------------------------
+# Rust-accelerated benchmark (use the normal public API, which dispatches to Rust)
+# ---------------------------------------------------------------------------
 
-    # Run it
-    result = subprocess.run(
-        [str(RUST_BENCH_BIN)],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        print(f"Rust benchmark failed:\n{result.stderr}")
-        sys.exit(1)
 
-    return json.loads(result.stdout)
+def bench_rust_accelerated() -> dict[str, float]:
+    """Run all benchmarks through the Rust-accelerated public API."""
+    import speakhuman
+
+    results = {}
+
+    # --- naturalsize ---
+    start = time.perf_counter()
+    for _ in range(ITERATIONS):
+        speakhuman.naturalsize(3_000_000)
+        speakhuman.naturalsize(1024 * 31, True)
+        speakhuman.naturalsize(3000, False, True)
+    results["naturalsize"] = time.perf_counter() - start
+
+    # --- intcomma ---
+    start = time.perf_counter()
+    for _ in range(ITERATIONS):
+        speakhuman.intcomma(1_000_000)
+        speakhuman.intcomma(1_234_567.25)
+        speakhuman.intcomma("10311")
+    results["intcomma"] = time.perf_counter() - start
+
+    # --- intword ---
+    start = time.perf_counter()
+    for _ in range(ITERATIONS):
+        speakhuman.intword("1000000")
+        speakhuman.intword("1200000000")
+        speakhuman.intword("8100000000000000000000000000000000")
+    results["intword"] = time.perf_counter() - start
+
+    # --- ordinal ---
+    start = time.perf_counter()
+    for _ in range(ITERATIONS):
+        speakhuman.ordinal(1)
+        speakhuman.ordinal(103)
+        speakhuman.ordinal(111)
+    results["ordinal"] = time.perf_counter() - start
+
+    # --- scientific ---
+    start = time.perf_counter()
+    for _ in range(ITERATIONS):
+        speakhuman.scientific(1000)
+        speakhuman.scientific(0.3)
+        speakhuman.scientific(5781651000)
+    results["scientific"] = time.perf_counter() - start
+
+    # --- fractional ---
+    start = time.perf_counter()
+    for _ in range(ITERATIONS):
+        speakhuman.fractional(0.3)
+        speakhuman.fractional(1.3)
+        speakhuman.fractional(1 / 3)
+    results["fractional"] = time.perf_counter() - start
+
+    # --- metric ---
+    start = time.perf_counter()
+    for _ in range(ITERATIONS):
+        speakhuman.metric(1500, "V")
+        speakhuman.metric(2e8, "W")
+        speakhuman.metric(220e-6, "F")
+    results["metric"] = time.perf_counter() - start
+
+    # --- apnumber ---
+    start = time.perf_counter()
+    for _ in range(ITERATIONS):
+        speakhuman.apnumber(0)
+        speakhuman.apnumber(5)
+        speakhuman.apnumber(10)
+    results["apnumber"] = time.perf_counter() - start
+
+    # --- naturaldelta ---
+    start = time.perf_counter()
+    for _ in range(ITERATIONS):
+        speakhuman.naturaldelta(dt.timedelta(days=7))
+        speakhuman.naturaldelta(dt.timedelta(seconds=30))
+        speakhuman.naturaldelta(dt.timedelta(days=500))
+    results["naturaldelta"] = time.perf_counter() - start
+
+    # --- natural_list ---
+    start = time.perf_counter()
+    for _ in range(ITERATIONS):
+        speakhuman.natural_list(["one", "two", "three"])
+        speakhuman.natural_list(["one", "two"])
+        speakhuman.natural_list(["one"])
+    results["natural_list"] = time.perf_counter() - start
+
+    # --- precisedelta ---
+    start = time.perf_counter()
+    for _ in range(ITERATIONS):
+        speakhuman.precisedelta(dt.timedelta(seconds=3633, days=2, microseconds=123000))
+        speakhuman.precisedelta(dt.timedelta(seconds=1))
+        speakhuman.precisedelta(dt.timedelta(days=370, hours=4, seconds=3))
+    results["precisedelta"] = time.perf_counter() - start
+
+    return results
 
 
 # ---------------------------------------------------------------------------
@@ -173,8 +266,6 @@ COLORS = {
     "dim": "\033[2m",
     "green": "\033[92m",
     "red": "\033[91m",
-    "bar_py": "\033[43m",   # yellow bg
-    "bar_rs": "\033[46m",   # cyan bg
 }
 
 
@@ -192,7 +283,7 @@ def display_results(py_results: dict[str, float], rs_results: dict[str, float]) 
 
     print()
     print(f"{c['bold']}{'═' * 80}{c['reset']}")
-    print(f"{c['bold']}  SPEAKHUMAN BENCHMARK: Python vs Rust  ({iters:,} iterations × 3 calls each){c['reset']}")
+    print(f"{c['bold']}  SPEAKHUMAN BENCHMARK: Pure Python vs Rust-Accelerated  ({iters:,} iters × 3 calls){c['reset']}")
     print(f"{c['bold']}{'═' * 80}{c['reset']}")
     print()
 
@@ -252,7 +343,7 @@ def display_results(py_results: dict[str, float], rs_results: dict[str, float]) 
     print()
     print(f"{c['bold']}{'═' * 80}{c['reset']}")
     print(f"  {c['bold']}Average speedup: {avg_speedup:.1f}x faster{c['reset']}")
-    print(f"  {c['python']}██ Python{c['reset']}  {c['rust']}██ Rust{c['reset']}")
+    print(f"  {c['python']}██ Pure Python{c['reset']}  {c['rust']}██ Rust-Accelerated{c['reset']}")
     print(f"{c['bold']}{'═' * 80}{c['reset']}")
     print()
 
@@ -271,11 +362,20 @@ def display_results(py_results: dict[str, float], rs_results: dict[str, float]) 
 
 
 def main() -> None:
-    print(f"\n{COLORS['bold']}Running Python benchmarks...{COLORS['reset']}")
-    py_results = bench_python()
+    has_rust = _check_rust_available()
 
-    print(f"{COLORS['bold']}Running Rust benchmarks...{COLORS['reset']}")
-    rs_results = bench_rust()
+    if not has_rust:
+        print(
+            f"\n{COLORS['red']}ERROR: Rust extension not available.{COLORS['reset']}\n"
+            f"Build it first with: maturin develop --release\n"
+        )
+        sys.exit(1)
+
+    print(f"\n{COLORS['bold']}Running pure-Python benchmarks...{COLORS['reset']}")
+    py_results = bench_pure_python()
+
+    print(f"{COLORS['bold']}Running Rust-accelerated benchmarks...{COLORS['reset']}")
+    rs_results = bench_rust_accelerated()
 
     display_results(py_results, rs_results)
 

@@ -154,6 +154,22 @@ impl TimeDelta {
 /// let delta = TimeDelta::from_days_seconds_micros(7, 0, 0);
 /// assert_eq!(naturaldelta_td(delta, true, "seconds"), "7 days");
 /// ```
+/// Python-style banker's rounding (round half to even).
+fn py_round(x: f64) -> i64 {
+    let floor = x.floor();
+    let frac = x - floor;
+    if (frac - 0.5).abs() < 1e-9 {
+        let floor_i = floor as i64;
+        if floor_i % 2 == 0 {
+            floor_i
+        } else {
+            floor_i + 1
+        }
+    } else {
+        x.round() as i64
+    }
+}
+
 pub fn naturaldelta_td(value: TimeDelta, months: bool, minimum_unit: &str) -> String {
     let min_unit = match Unit::from_str(minimum_unit) {
         Ok(u) => u,
@@ -168,7 +184,7 @@ pub fn naturaldelta_td(value: TimeDelta, months: bool, minimum_unit: &str) -> St
     let delta = value.abs();
     let years = delta.days / 365;
     let days = delta.days % 365;
-    let num_months = ((days as f64) / 30.5).round() as i64;
+    let num_months = py_round((days as f64) / 30.5);
 
     if years == 0 && days < 1 {
         if delta.seconds == 0 {
@@ -202,7 +218,7 @@ pub fn naturaldelta_td(value: TimeDelta, months: bool, minimum_unit: &str) -> St
         }
 
         if delta.seconds >= 60 && delta.seconds < 3600 {
-            let minutes = ((delta.seconds as f64) / 60.0).round() as i64;
+            let minutes = py_round((delta.seconds as f64) / 60.0);
             if minutes == 1 {
                 return i18n::gettext("a minute");
             }
@@ -214,7 +230,7 @@ pub fn naturaldelta_td(value: TimeDelta, months: bool, minimum_unit: &str) -> St
         }
 
         if delta.seconds >= 3600 {
-            let hours = ((delta.seconds as f64) / 3600.0).round() as i64;
+            let hours = py_round((delta.seconds as f64) / 3600.0);
             if hours == 1 {
                 return i18n::gettext("an hour");
             }

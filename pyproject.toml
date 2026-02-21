@@ -1,8 +1,7 @@
 [build-system]
-build-backend = "hatchling.build"
+build-backend = "maturin"
 requires = [
-  "hatch-vcs",
-  "hatchling>=1.27",
+  "maturin>=1.7,<2.0",
 ]
 
 [project]
@@ -34,7 +33,7 @@ classifiers = [
   "Topic :: Text Processing",
   "Topic :: Text Processing :: General",
 ]
-dynamic = [ "version" ]
+version = "0.1.0"
 optional-dependencies.tests = [
   "freezegun",
   "pytest",
@@ -45,17 +44,13 @@ urls."Issue tracker" = "https://github.com/jackburrus/humanize/issues"
 urls."Release notes" = "https://github.com/jackburrus/humanize/releases"
 urls.Source = "https://github.com/jackburrus/humanize"
 
-[tool.hatch]
-version.source = "vcs"
-
-[tool.hatch.build]
-artifacts = [ "*.mo" ]
-
-[tool.hatch.build.hooks.vcs]
-version-file = "src/speakhuman/_version.py"
-
-[tool.hatch.version.raw-options]
-local_scheme = "no-local-version"
+[tool.maturin]
+python-source = "src"
+module-name = "speakhuman._speakhuman_rs"
+include = [
+  { path = "src/speakhuman/locale/**/*.mo", format = "sdist" },
+  { path = "src/speakhuman/locale/**/*.mo", format = "wheel" },
+]
 
 [tool.ruff]
 fix = true

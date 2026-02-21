@@ -33,7 +33,7 @@ suffixes = {
 }
 
 
-def naturalsize(
+def _py_naturalsize(
     value: float | str,
     binary: bool = False,
     gnu: bool = False,
@@ -97,3 +97,9 @@ def naturalsize(
     exp = int(min(log(abs_bytes, base), len(suffix)))
     ret: str = format % (bytes_ / (base**exp)) + suffix[exp - 1]
     return ret
+
+
+try:
+    from speakhuman._speakhuman_rs import naturalsize
+except ImportError:
+    naturalsize = _py_naturalsize

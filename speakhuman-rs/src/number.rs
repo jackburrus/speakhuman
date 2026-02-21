@@ -280,24 +280,24 @@ pub fn intcomma(value: &str, ndigits: Option<usize>) -> String {
 /// assert_eq!(intword("1200000000", "%.1f"), "1.2 billion");
 /// ```
 pub fn intword(value: &str, format: &str) -> String {
-    // Try to parse
-    if let Ok(f) = value.parse::<f64>() {
-        if !f.is_finite() {
-            return format_not_finite(f).unwrap();
-        }
-    }
-
-    let int_val: i128 = match value.replace('_', "").parse::<f64>() {
-        Ok(f) => f as i128,
+    // Parse as f64, working directly with floats to avoid i128 overflow for
+    // values > 1.7e38 (like googol = 10^100)
+    let f_val: f64 = match value.replace('_', "").parse::<f64>() {
+        Ok(f) => f,
         Err(_) => return value.to_string(),
     };
 
-    let negative = int_val < 0;
-    let abs_val = int_val.unsigned_abs();
+    if !f_val.is_finite() {
+        return format_not_finite(f_val).unwrap();
+    }
+
+    let negative = f_val < 0.0;
+    let abs_f64 = f_val.abs();
     let negative_prefix = if negative { "-" } else { "" };
 
-    if abs_val < 1000 {
-        return format!("{}{}", negative_prefix, abs_val);
+    if abs_f64 < 1000.0 {
+        // Display as integer for small values
+        return format!("{}{}", negative_prefix, abs_f64 as i64);
     }
 
     // Use f64 powers to avoid u128 overflow for googol (10^100)
@@ -305,14 +305,12 @@ pub fn intword(value: &str, format: &str) -> String {
         1e3, 1e6, 1e9, 1e12, 1e15, 1e18, 1e21, 1e24, 1e27, 1e30, 1e33, 1e100,
     ];
 
-    let abs_f64 = abs_val as f64;
-
     // Find the right power
     let ordinal = match powers_f64
         .iter()
         .position(|&p| p > abs_f64)
     {
-        Some(0) => return format!("{}{}", negative_prefix, abs_val),
+        Some(0) => return format!("{}{}", negative_prefix, abs_f64 as i64),
         Some(i) => i - 1,
         None => powers_f64.len() - 1,
     };
