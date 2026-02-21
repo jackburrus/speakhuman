@@ -1,3 +1,3 @@
 # Number
 
-::: humanize.number
+::: speakhuman.number

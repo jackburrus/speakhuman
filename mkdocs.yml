@@ -1,6 +1,6 @@
-site_name: humanize
+site_name: speakhuman
 site_url: https://humanize.readthedocs.io
-repo_url: https://github.com/python-humanize/humanize
+repo_url: https://github.com/jackburrus/humanize
 theme:
   name: material
   palette:
@@ -38,4 +38,4 @@ extra_css:
   - css/code_select.css
 
 watch:
-  - src/humanize
+  - src/speakhuman

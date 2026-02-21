@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-import humanize
+import speakhuman
 
 
 @pytest.mark.parametrize(
@@ -20,4 +20,4 @@ import humanize
 def test_natural_list(
     test_args: list[str] | list[int] | list[str | int], expected: str
 ) -> None:
-    assert humanize.natural_list(*test_args) == expected
+    assert speakhuman.natural_list(*test_args) == expected

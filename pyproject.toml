@@ -6,8 +6,8 @@ requires = [
 ]
 
 [project]
-name = "humanize"
-description = "Python humanize utilities"
+name = "speakhuman"
+description = "Python humanize utilities - Rust-accelerated fork of humanize"
 readme = "README.md"
 keywords = [
   "humanize time size",
@@ -40,12 +40,10 @@ optional-dependencies.tests = [
   "pytest",
   "pytest-cov",
 ]
-urls.Documentation = "https://humanize.readthedocs.io/"
-urls.Funding = "https://tidelift.com/subscription/pkg/pypi-humanize?utm_source=pypi-humanize&utm_medium=pypi"
-urls.Homepage = "https://github.com/python-humanize/humanize"
-urls."Issue tracker" = "https://github.com/python-humanize/humanize/issues"
-urls."Release notes" = "https://github.com/python-humanize/humanize/releases"
-urls.Source = "https://github.com/python-humanize/humanize"
+urls.Homepage = "https://github.com/jackburrus/humanize"
+urls."Issue tracker" = "https://github.com/jackburrus/humanize/issues"
+urls."Release notes" = "https://github.com/jackburrus/humanize/releases"
+urls.Source = "https://github.com/jackburrus/humanize"
 
 [tool.hatch]
 version.source = "vcs"
@@ -54,7 +52,7 @@ version.source = "vcs"
 artifacts = [ "*.mo" ]
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/humanize/_version.py"
+version-file = "src/speakhuman/_version.py"
 
 [tool.hatch.version.raw-options]
 local_scheme = "no-local-version"
@@ -95,7 +93,7 @@ lint.per-file-ignores."tests/*" = [
 lint.flake8-import-conventions.aliases.datetime = "dt"
 lint.flake8-import-conventions.banned-from = [ "datetime" ]
 lint.flake8-pytest-style.parametrize-names-type = "csv"
-lint.isort.known-first-party = [ "humanize" ]
+lint.isort.known-first-party = [ "speakhuman" ]
 lint.isort.required-imports = [ "from __future__ import annotations" ]
 lint.pydocstyle.convention = "google"
 lint.future-annotations = true

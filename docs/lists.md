@@ -1,3 +1,3 @@
 # Lists
 
-::: humanize.lists
+::: speakhuman.lists

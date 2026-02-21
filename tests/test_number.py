@@ -7,8 +7,8 @@ import typing
 
 import pytest
 
-import humanize
-from humanize import number
+import speakhuman
+from speakhuman import number
 
 
 @pytest.mark.parametrize(
@@ -35,7 +35,7 @@ from humanize import number
     ],
 )
 def test_ordinal(test_input: str, expected: str) -> None:
-    assert humanize.ordinal(test_input) == expected
+    assert speakhuman.ordinal(test_input) == expected
 
 
 @pytest.mark.parametrize(
@@ -80,7 +80,7 @@ def test_ordinal(test_input: str, expected: str) -> None:
 def test_intcomma(
     test_args: list[int] | list[float] | list[str], expected: str
 ) -> None:
-    assert humanize.intcomma(*test_args) == expected
+    assert speakhuman.intcomma(*test_args) == expected
 
 
 def test_intword_powers() -> None:
@@ -137,7 +137,7 @@ def test_intword_powers() -> None:
     ],
 )
 def test_intword(test_args: list[str], expected: str) -> None:
-    assert humanize.intword(*test_args) == expected
+    assert speakhuman.intword(*test_args) == expected
 
 
 @pytest.mark.parametrize(
@@ -160,7 +160,7 @@ def test_intword(test_args: list[str], expected: str) -> None:
     ],
 )
 def test_apnumber(test_input: int | str, expected: str) -> None:
-    assert humanize.apnumber(test_input) == expected
+    assert speakhuman.apnumber(test_input) == expected
 
 
 @pytest.mark.parametrize(
@@ -186,7 +186,7 @@ def test_apnumber(test_input: int | str, expected: str) -> None:
     ],
 )
 def test_fractional(test_input: float | str, expected: str) -> None:
-    assert humanize.fractional(test_input) == expected
+    assert speakhuman.fractional(test_input) == expected
 
 
 @pytest.mark.parametrize(
@@ -217,7 +217,7 @@ def test_fractional(test_input: float | str, expected: str) -> None:
     ],
 )
 def test_scientific(test_args: list[typing.Any], expected: str) -> None:
-    assert humanize.scientific(*test_args) == expected
+    assert speakhuman.scientific(*test_args) == expected
 
 
 @pytest.mark.parametrize(
@@ -230,14 +230,14 @@ def test_scientific(test_args: list[typing.Any], expected: str) -> None:
         ([0.9999, "{:.0%}", None, 0.99], ">99%"),
         ([0.0001, "{:.0%}", 0.01, None, "under ", None], "under 1%"),
         ([0.9999, "{:.0%}", None, 0.99, None, "above "], "above 99%"),
-        ([1, humanize.intword, 1e6, None, "under "], "under 1.0 million"),
+        ([1, speakhuman.intword, 1e6, None, "under "], "under 1.0 million"),
         ([math.nan], "NaN"),
         ([math.inf], "+Inf"),
         ([-math.inf], "-Inf"),
     ],
 )
 def test_clamp(test_args: list[typing.Any], expected: str) -> None:
-    assert humanize.clamp(*test_args) == expected
+    assert speakhuman.clamp(*test_args) == expected
 
 
 @pytest.mark.parametrize(
@@ -306,4 +306,4 @@ def test_clamp(test_args: list[typing.Any], expected: str) -> None:
     ids=str,
 )
 def test_metric(test_args: list[typing.Any], expected: str) -> None:
-    assert humanize.metric(*test_args) == expected
+    assert speakhuman.metric(*test_args) == expected

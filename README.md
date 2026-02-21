@@ -1,13 +1,8 @@
-# humanize
+# speakhuman
 
-[![PyPI version](https://img.shields.io/pypi/v/humanize.svg?logo=pypi&logoColor=FFE873)](https://pypi.org/project/humanize/)
-[![Supported Python versions](https://img.shields.io/pypi/pyversions/humanize.svg?logo=python&logoColor=FFE873)](https://pypi.org/project/humanize/)
-[![Documentation Status](https://readthedocs.org/projects/python-humanize/badge/?version=latest)](https://humanize.readthedocs.io/en/latest/?badge=latest)
-[![PyPI downloads](https://img.shields.io/pypi/dm/humanize.svg)](https://pypistats.org/packages/humanize)
-[![GitHub Actions status](https://github.com/python-humanize/humanize/workflows/Test/badge.svg)](https://github.com/python-humanize/humanize/actions)
-[![codecov](https://codecov.io/gh/python-humanize/humanize/branch/main/graph/badge.svg)](https://codecov.io/gh/python-humanize/humanize)
-[![MIT License](https://img.shields.io/github/license/python-humanize/humanize.svg)](LICENCE)
-[![Tidelift](https://tidelift.com/badges/package/pypi/humanize)](https://tidelift.com/subscription/pkg/pypi-humanize?utm_source=pypi-humanize&utm_medium=badge)
+Rust-accelerated fork of [humanize](https://github.com/python-humanize/humanize).
+
+[![MIT License](https://img.shields.io/github/license/jackburrus/humanize.svg)](LICENCE)
 
 This modest package contains various common humanization utilities, like turning a
 number into a fuzzy human-readable duration ("3 minutes ago") or into a human-readable
@@ -46,10 +41,6 @@ size or throughput. It is localized to:
 - Uzbek
 - Vietnamese
 
-## API reference
-
-[https://humanize.readthedocs.io](https://humanize.readthedocs.io/)
-
 <!-- usage-start -->
 
 ## Installation
@@ -57,14 +48,14 @@ size or throughput. It is localized to:
 ### From PyPI
 
 ```bash
-python3 -m pip install --upgrade humanize
+python3 -m pip install --upgrade speakhuman
 ```
 
 ### From source
 
 ```bash
-git clone https://github.com/python-humanize/humanize
-cd humanize
+git clone https://github.com/jackburrus/humanize
+cd speakhuman
 python3 -m pip install -e .
 ```
 
@@ -73,51 +64,51 @@ python3 -m pip install -e .
 ### Integer humanization
 
 ```pycon
->>> import humanize
->>> humanize.intcomma(12345)
+>>> import speakhuman
+>>> speakhuman.intcomma(12345)
 '12,345'
->>> humanize.intword(123455913)
+>>> speakhuman.intword(123455913)
 '123.5 million'
->>> humanize.intword(12345591313)
+>>> speakhuman.intword(12345591313)
 '12.3 billion'
->>> humanize.apnumber(4)
+>>> speakhuman.apnumber(4)
 'four'
->>> humanize.apnumber(41)
+>>> speakhuman.apnumber(41)
 '41'
 ```
 
 ### Date & time humanization
 
 ```pycon
->>> import humanize
+>>> import speakhuman
 >>> import datetime as dt
->>> humanize.naturalday(dt.datetime.now())
+>>> speakhuman.naturalday(dt.datetime.now())
 'today'
->>> humanize.naturaldelta(dt.timedelta(seconds=1001))
+>>> speakhuman.naturaldelta(dt.timedelta(seconds=1001))
 '16 minutes'
->>> humanize.naturalday(dt.datetime.now() - dt.timedelta(days=1))
+>>> speakhuman.naturalday(dt.datetime.now() - dt.timedelta(days=1))
 'yesterday'
->>> humanize.naturalday(dt.date(2007, 6, 5))
+>>> speakhuman.naturalday(dt.date(2007, 6, 5))
 'Jun 05'
->>> humanize.naturaldate(dt.date(2007, 6, 5))
+>>> speakhuman.naturaldate(dt.date(2007, 6, 5))
 'Jun 05 2007'
->>> humanize.naturaltime(dt.datetime.now() - dt.timedelta(seconds=1))
+>>> speakhuman.naturaltime(dt.datetime.now() - dt.timedelta(seconds=1))
 'a second ago'
->>> humanize.naturaltime(dt.datetime.now() - dt.timedelta(seconds=3600))
+>>> speakhuman.naturaltime(dt.datetime.now() - dt.timedelta(seconds=3600))
 'an hour ago'
 ```
 
 ### Precise time delta
 
 ```pycon
->>> import humanize
+>>> import speakhuman
 >>> import datetime as dt
 >>> delta = dt.timedelta(seconds=3633, days=2, microseconds=123000)
->>> humanize.precisedelta(delta)
+>>> speakhuman.precisedelta(delta)
 '2 days, 1 hour and 33.12 seconds'
->>> humanize.precisedelta(delta, minimum_unit="microseconds")
+>>> speakhuman.precisedelta(delta, minimum_unit="microseconds")
 '2 days, 1 hour, 33 seconds and 123 milliseconds'
->>> humanize.precisedelta(delta, suppress=["days"], format="%0.4f")
+>>> speakhuman.precisedelta(delta, suppress=["days"], format="%0.4f")
 '49 hours and 33.1230 seconds'
 ```
 
@@ -126,74 +117,74 @@ python3 -m pip install -e .
 If seconds are too large, set `minimum_unit` to milliseconds or microseconds:
 
 ```pycon
->>> import humanize
+>>> import speakhuman
 >>> import datetime as dt
->>> humanize.naturaldelta(dt.timedelta(seconds=2))
+>>> speakhuman.naturaldelta(dt.timedelta(seconds=2))
 '2 seconds'
 ```
 
 ```pycon
 >>> delta = dt.timedelta(milliseconds=4)
->>> humanize.naturaldelta(delta)
+>>> speakhuman.naturaldelta(delta)
 'a moment'
->>> humanize.naturaldelta(delta, minimum_unit="milliseconds")
+>>> speakhuman.naturaldelta(delta, minimum_unit="milliseconds")
 '4 milliseconds'
->>> humanize.naturaldelta(delta, minimum_unit="microseconds")
+>>> speakhuman.naturaldelta(delta, minimum_unit="microseconds")
 '4 milliseconds'
 ```
 
 ```pycon
->>> humanize.naturaltime(delta)
+>>> speakhuman.naturaltime(delta)
 'now'
->>> humanize.naturaltime(delta, minimum_unit="milliseconds")
+>>> speakhuman.naturaltime(delta, minimum_unit="milliseconds")
 '4 milliseconds ago'
->>> humanize.naturaltime(delta, minimum_unit="microseconds")
+>>> speakhuman.naturaltime(delta, minimum_unit="microseconds")
 '4 milliseconds ago'
 ```
 
 ### File size humanization
 
 ```pycon
->>> import humanize
->>> humanize.naturalsize(1_000_000)
+>>> import speakhuman
+>>> speakhuman.naturalsize(1_000_000)
 '1.0 MB'
->>> humanize.naturalsize(1_000_000, binary=True)
+>>> speakhuman.naturalsize(1_000_000, binary=True)
 '976.6 KiB'
->>> humanize.naturalsize(1_000_000, gnu=True)
+>>> speakhuman.naturalsize(1_000_000, gnu=True)
 '976.6K'
 ```
 
 ### Human-readable floating point numbers
 
 ```pycon
->>> import humanize
->>> humanize.fractional(1/3)
+>>> import speakhuman
+>>> speakhuman.fractional(1/3)
 '1/3'
->>> humanize.fractional(1.5)
+>>> speakhuman.fractional(1.5)
 '1 1/2'
->>> humanize.fractional(0.3)
+>>> speakhuman.fractional(0.3)
 '3/10'
->>> humanize.fractional(0.333)
+>>> speakhuman.fractional(0.333)
 '333/1000'
->>> humanize.fractional(1)
+>>> speakhuman.fractional(1)
 '1'
 ```
 
 ### Scientific notation
 
 ```pycon
->>> import humanize
->>> humanize.scientific(0.3)
+>>> import speakhuman
+>>> speakhuman.scientific(0.3)
 '3.00 x 10⁻¹'
->>> humanize.scientific(500)
+>>> speakhuman.scientific(500)
 '5.00 x 10²'
->>> humanize.scientific("20000")
+>>> speakhuman.scientific("20000")
 '2.00 x 10⁴'
->>> humanize.scientific(1**10)
+>>> speakhuman.scientific(1**10)
 '1.00 x 10⁰'
->>> humanize.scientific(1**10, precision=1)
+>>> speakhuman.scientific(1**10, precision=1)
 '1.0 x 10⁰'
->>> humanize.scientific(1**10, precision=0)
+>>> speakhuman.scientific(1**10, precision=0)
 '1 x 10⁰'
 ```
 
@@ -202,15 +193,15 @@ If seconds are too large, set `minimum_unit` to milliseconds or microseconds:
 How to change locale at runtime:
 
 ```pycon
->>> import humanize
+>>> import speakhuman
 >>> import datetime as dt
->>> humanize.naturaltime(dt.timedelta(seconds=3))
+>>> speakhuman.naturaltime(dt.timedelta(seconds=3))
 '3 seconds ago'
->>> _t = humanize.i18n.activate("ru_RU")
->>> humanize.naturaltime(dt.timedelta(seconds=3))
+>>> _t = speakhuman.i18n.activate("ru_RU")
+>>> speakhuman.naturaltime(dt.timedelta(seconds=3))
 '3 секунды назад'
->>> humanize.i18n.deactivate()
->>> humanize.naturaltime(dt.timedelta(seconds=3))
+>>> speakhuman.i18n.deactivate()
+>>> speakhuman.naturaltime(dt.timedelta(seconds=3))
 '3 seconds ago'
 ```
 
@@ -218,11 +209,11 @@ You can pass additional parameter `path` to `activate` to specify a path to sear
 locales in.
 
 ```pycon
->>> import humanize
->>> humanize.i18n.activate("xx_XX")
+>>> import speakhuman
+>>> speakhuman.i18n.activate("xx_XX")
 <...>
-FileNotFoundError: [Errno 2] No translation file found for domain: 'humanize'
->>> humanize.i18n.activate("pt_BR", path="path/to/my/own/translation/")
+FileNotFoundError: [Errno 2] No translation file found for domain: 'speakhuman'
+>>> speakhuman.i18n.activate("pt_BR", path="path/to/my/own/translation/")
 <gettext.GNUTranslations instance ...>
 ```
 
@@ -231,14 +222,14 @@ FileNotFoundError: [Errno 2] No translation file found for domain: 'humanize'
 How to add new phrases to existing locale files:
 
 ```sh
-xgettext --from-code=UTF-8 -o humanize.pot -k'_' -k'N_' -k'P_:1c,2' -k'NS_:1,2' -k'_ngettext:1,2' -l python src/humanize/*.py  # extract new phrases
-msgmerge -U src/humanize/locale/ru_RU/LC_MESSAGES/humanize.po humanize.pot # add them to locale files
+xgettext --from-code=UTF-8 -o speakhuman.pot -k'_' -k'N_' -k'P_:1c,2' -k'NS_:1,2' -k'_ngettext:1,2' -l python src/speakhuman/*.py  # extract new phrases
+msgmerge -U src/speakhuman/locale/ru_RU/LC_MESSAGES/speakhuman.po speakhuman.pot # add them to locale files
 ```
 
 How to add a new locale:
 
 ```sh
-msginit -i humanize.pot -o humanize/locale/<locale name>/LC_MESSAGES/humanize.po --locale <locale name>
+msginit -i speakhuman.pot -o speakhuman/locale/<locale name>/LC_MESSAGES/speakhuman.po --locale <locale name>
 ```
 
 Where `<locale name>` is a locale abbreviation, eg. `en_GB`, `pt_BR` or just `ru`, `fr`

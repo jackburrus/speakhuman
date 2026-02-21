@@ -1,3 +1,3 @@
 # Time
 
-::: humanize.time
+::: speakhuman.time

@@ -8,8 +8,8 @@ import typing
 import pytest
 from freezegun import freeze_time
 
-import humanize
-from humanize import time
+import speakhuman
+from speakhuman import time
 
 ONE_DAY_DELTA = dt.timedelta(days=1)
 
@@ -73,7 +73,7 @@ def test_date_and_delta() -> None:
     assert time._date_and_delta("NaN") == (None, "NaN")
 
 
-# Tests for the public interface of humanize.time
+# Tests for the public interface of speakhuman.time
 
 
 @pytest.mark.parametrize(
@@ -86,7 +86,7 @@ def test_date_and_delta() -> None:
     ],
 )
 def test_naturaldelta_nomonths(test_input: dt.timedelta, expected: str) -> None:
-    assert humanize.naturaldelta(test_input, months=False) == expected
+    assert speakhuman.naturaldelta(test_input, months=False) == expected
 
 
 @pytest.mark.parametrize(
@@ -133,9 +133,9 @@ def test_naturaldelta_nomonths(test_input: dt.timedelta, expected: str) -> None:
     ],
 )
 def test_naturaldelta(test_input: float | dt.timedelta, expected: str) -> None:
-    assert humanize.naturaldelta(test_input) == expected
+    assert speakhuman.naturaldelta(test_input) == expected
     if not isinstance(test_input, str):
-        assert humanize.naturaldelta(-test_input) == expected
+        assert speakhuman.naturaldelta(-test_input) == expected
 
 
 @freeze_time(FROZEN_DATE)
@@ -184,7 +184,7 @@ def test_naturaldelta(test_input: float | dt.timedelta, expected: str) -> None:
 def test_naturaltime(
     test_input: dt.datetime | dt.timedelta | float, expected: str
 ) -> None:
-    assert humanize.naturaltime(test_input) == expected
+    assert speakhuman.naturaltime(test_input) == expected
 
 
 @freeze_time(FROZEN_DATE)
@@ -233,7 +233,7 @@ def test_naturaltime(
 def test_naturaltime_nomonths(
     test_input: dt.datetime | dt.timedelta | float, expected: str
 ) -> None:
-    assert humanize.naturaltime(test_input, months=False) == expected
+    assert speakhuman.naturaltime(test_input, months=False) == expected
 
 
 @freeze_time(FROZEN_DATE)
@@ -253,7 +253,7 @@ def test_naturaltime_nomonths(
     ],
 )
 def test_naturalday(test_args: list[typing.Any], expected: str) -> None:
-    assert humanize.naturalday(*test_args) == expected
+    assert speakhuman.naturalday(*test_args) == expected
 
 
 @freeze_time(FROZEN_DATE)
@@ -297,7 +297,7 @@ def test_naturalday(test_args: list[typing.Any], expected: str) -> None:
     ],
 )
 def test_naturaldate(test_input: dt.date, expected: str) -> None:
-    assert humanize.naturaldate(test_input) == expected
+    assert speakhuman.naturaldate(test_input) == expected
 
 
 @pytest.mark.parametrize(
@@ -319,7 +319,7 @@ def test_naturaldelta_minimum_unit_default(seconds: float, expected: str) -> Non
     delta = dt.timedelta(seconds=seconds)
 
     # Act / Assert
-    assert humanize.naturaldelta(delta) == expected
+    assert speakhuman.naturaldelta(delta) == expected
 
 
 @pytest.mark.parametrize(
@@ -364,8 +364,8 @@ def test_naturaldelta_minimum_unit_explicit(
     delta = dt.timedelta(seconds=seconds)
 
     # Act / Assert
-    assert humanize.naturaldelta(delta, minimum_unit=minimum_unit) == expected
-    assert humanize.naturaldelta(seconds, minimum_unit=minimum_unit) == expected
+    assert speakhuman.naturaldelta(delta, minimum_unit=minimum_unit) == expected
+    assert speakhuman.naturaldelta(seconds, minimum_unit=minimum_unit) == expected
 
 
 @freeze_time(FROZEN_DATE)
@@ -388,7 +388,7 @@ def test_naturaltime_minimum_unit_default(seconds: float, expected: str) -> None
     datetime = NOW - dt.timedelta(seconds=seconds)
 
     # Act / Assert
-    assert humanize.naturaltime(datetime) == expected
+    assert speakhuman.naturaltime(datetime) == expected
 
 
 @freeze_time(FROZEN_DATE)
@@ -434,7 +434,7 @@ def test_naturaltime_minimum_unit_explicit(
     datetime = NOW - dt.timedelta(seconds=seconds)
 
     # Act / Assert
-    assert humanize.naturaltime(datetime, minimum_unit=minimum_unit) == expected
+    assert speakhuman.naturaltime(datetime, minimum_unit=minimum_unit) == expected
 
 
 @freeze_time(FROZEN_DATE)
@@ -474,7 +474,7 @@ def test_naturaltime_minimum_unit_explicit(
     ],
 )
 def test_naturaltime_timezone(test_input: dt.datetime, expected: str) -> None:
-    assert humanize.naturaltime(test_input) == expected
+    assert speakhuman.naturaltime(test_input) == expected
 
 
 @freeze_time(FROZEN_DATE)
@@ -514,7 +514,7 @@ def test_naturaltime_timezone(test_input: dt.datetime, expected: str) -> None:
     ],
 )
 def test_naturaltime_timezone_when(test_input: dt.datetime, expected: str) -> None:
-    assert humanize.naturaltime(test_input, when=NOW_UTC) == expected
+    assert speakhuman.naturaltime(test_input, when=NOW_UTC) == expected
 
 
 @pytest.mark.parametrize(
@@ -541,7 +541,7 @@ def test_naturaltime_timezone_when(test_input: dt.datetime, expected: str) -> No
 def test_precisedelta_one_unit_enough(
     val: dt.timedelta | float, min_unit: str, expected: str
 ) -> None:
-    assert humanize.precisedelta(val, minimum_unit=min_unit) == expected
+    assert speakhuman.precisedelta(val, minimum_unit=min_unit) == expected
 
 
 @pytest.mark.parametrize(
@@ -605,7 +605,7 @@ def test_precisedelta_one_unit_enough(
 def test_precisedelta_multiple_units(
     val: dt.timedelta | float, min_unit: str, expected: str
 ) -> None:
-    assert humanize.precisedelta(val, minimum_unit=min_unit) == expected
+    assert speakhuman.precisedelta(val, minimum_unit=min_unit) == expected
 
 
 @pytest.mark.parametrize(
@@ -707,7 +707,7 @@ def test_precisedelta_multiple_units(
 def test_precisedelta_custom_format(
     val: dt.timedelta | float, min_unit: str, fmt: str, expected: str
 ) -> None:
-    assert humanize.precisedelta(val, minimum_unit=min_unit, format=fmt) == expected
+    assert speakhuman.precisedelta(val, minimum_unit=min_unit, format=fmt) == expected
 
 
 @pytest.mark.parametrize(
@@ -785,21 +785,21 @@ def test_precisedelta_suppress_units(
     val: dt.timedelta | float, min_unit: str, suppress: list[str], expected: str
 ) -> None:
     assert (
-        humanize.precisedelta(val, minimum_unit=min_unit, suppress=suppress) == expected
+        speakhuman.precisedelta(val, minimum_unit=min_unit, suppress=suppress) == expected
     )
 
 
 def test_precisedelta_bogus_call() -> None:
-    assert humanize.precisedelta(None) == "None"
+    assert speakhuman.precisedelta(None) == "None"
 
     with pytest.raises(
         ValueError,
         match="Minimum unit is suppressed and no suitable replacement was found",
     ):
-        humanize.precisedelta(1, minimum_unit="years", suppress=["years"])
+        speakhuman.precisedelta(1, minimum_unit="years", suppress=["years"])
 
     with pytest.raises(ValueError, match="Minimum unit 'years' not supported"):
-        humanize.naturaldelta(1, minimum_unit="years")
+        speakhuman.naturaldelta(1, minimum_unit="years")
 
 
 def test_time_unit() -> None:

@@ -1,6 +1,6 @@
-# humanize
+# speakhuman
 
-Welcome to the humanize API reference.
+Welcome to the speakhuman API reference.
 
 - [Number](number.md)
 - [Time](time.md)

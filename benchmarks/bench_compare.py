@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Benchmark comparison: Python humanize vs Rust humanize.
+"""Benchmark comparison: Python speakhuman vs Rust speakhuman.
 
 Runs identical workloads through both implementations and displays
 a side-by-side performance comparison with ASCII bar charts.
@@ -8,8 +8,8 @@ Usage:
     python benchmarks/bench_compare.py
 
 Prerequisites:
-    - Python humanize must be installed (pip install -e .)
-    - Rust humanize must be compiled (cd humanize-rs && cargo build --release)
+    - Python speakhuman must be installed (pip install -e .)
+    - Rust speakhuman must be compiled (cd speakhuman-rs && cargo build --release)
 """
 
 from __future__ import annotations
@@ -28,13 +28,13 @@ from pathlib import Path
 
 ITERATIONS = 100_000
 REPO_ROOT = Path(__file__).resolve().parent.parent
-RUST_BENCH_BIN = REPO_ROOT / "humanize-rs" / "target" / "release" / "humanize-bench"
+RUST_BENCH_BIN = REPO_ROOT / "speakhuman-rs" / "target" / "release" / "speakhuman-bench"
 
 
 def _import_humanize():
     sys.path.insert(0, str(REPO_ROOT / "src"))
-    import humanize
-    return humanize
+    import speakhuman
+    return speakhuman
 
 
 def bench_python() -> dict[str, float]:
@@ -139,8 +139,8 @@ def bench_rust() -> dict[str, float]:
     """Run all benchmarks through the Rust implementation."""
     # Build the bench binary if needed
     build_result = subprocess.run(
-        ["cargo", "build", "--release", "--bin", "humanize-bench"],
-        cwd=REPO_ROOT / "humanize-rs",
+        ["cargo", "build", "--release", "--bin", "speakhuman-bench"],
+        cwd=REPO_ROOT / "speakhuman-rs",
         capture_output=True,
         text=True,
     )
@@ -192,7 +192,7 @@ def display_results(py_results: dict[str, float], rs_results: dict[str, float]) 
 
     print()
     print(f"{c['bold']}{'═' * 80}{c['reset']}")
-    print(f"{c['bold']}  HUMANIZE BENCHMARK: Python vs Rust  ({iters:,} iterations × 3 calls each){c['reset']}")
+    print(f"{c['bold']}  SPEAKHUMAN BENCHMARK: Python vs Rust  ({iters:,} iterations × 3 calls each){c['reset']}")
     print(f"{c['bold']}{'═' * 80}{c['reset']}")
     print()
 

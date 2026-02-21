@@ -1,3 +1,3 @@
 # Filesize
 
-::: humanize.filesize
+::: speakhuman.filesize

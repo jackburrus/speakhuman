@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-import humanize
+import speakhuman
 
 
 @pytest.mark.parametrize(
@@ -84,7 +84,7 @@ import humanize
     ],
 )
 def test_naturalsize(test_args: list[int] | list[int | bool], expected: str) -> None:
-    assert humanize.naturalsize(*test_args) == expected
+    assert speakhuman.naturalsize(*test_args) == expected
 
     # Retest with negative input
     if isinstance(test_args[0], int):
@@ -92,4 +92,4 @@ def test_naturalsize(test_args: list[int] | list[int | bool], expected: str) -> 
     else:
         test_args[0] = f"-{test_args[0]}"
 
-    assert humanize.naturalsize(*test_args) == "-" + expected
+    assert speakhuman.naturalsize(*test_args) == "-" + expected
