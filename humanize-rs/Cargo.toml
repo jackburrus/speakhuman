@@ -1,0 +1,18 @@
+[package]
+name = "humanize"
+version = "0.1.0"
+edition = "2021"
+description = "Humanizing functions for numbers, dates, times, and file sizes - Rust port of Python humanize"
+license = "MIT"
+
+[dependencies]
+chrono = "0.4"
+regex = "1"
+num-traits = "0.2"
+once_cell = "1"
+
+[dev-dependencies]
+
+[[bin]]
+name = "humanize-bench"
+path = "src/bench.rs"
