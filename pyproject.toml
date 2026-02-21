@@ -33,7 +33,7 @@ classifiers = [
   "Topic :: Text Processing",
   "Topic :: Text Processing :: General",
 ]
-version = "0.1.0"
+version = "0.1.1"
 optional-dependencies.tests = [
   "freezegun",
   "pytest",

@@ -23,7 +23,9 @@ from speakhuman.time import (
     precisedelta,
 )
 
-from ._version import __version__
+from importlib.metadata import version
+
+__version__ = version("speakhuman")
 
 __all__ = [
     "__version__",
