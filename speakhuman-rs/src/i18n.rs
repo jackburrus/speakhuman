@@ -245,9 +245,9 @@ thread_local! {
 /// In the Rust port, callers should provide the path explicitly. This tries to find
 /// the locale directory from the Python source.
 fn get_default_locale_path() -> Option<PathBuf> {
-    // Try to locate relative to the humanize-rs crate
+    // Try to locate relative to the speakhuman-rs crate
     let candidates = [
-        // When running from humanize-rs directory
+        // When running from speakhuman-rs directory
         PathBuf::from("../src/speakhuman/locale"),
         // When running from repo root
         PathBuf::from("src/speakhuman/locale"),

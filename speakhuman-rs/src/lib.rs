@@ -1,4 +1,4 @@
-//! Speakhuman - Rust port of the Python humanize library.
+//! Speakhuman - human-readable formatting for numbers, dates, times, and file sizes.
 //!
 //! This library provides functions to convert machine-readable values into
 //! human-readable formats:

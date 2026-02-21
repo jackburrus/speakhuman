@@ -1,6 +1,6 @@
 site_name: speakhuman
-site_url: https://humanize.readthedocs.io
-repo_url: https://github.com/jackburrus/humanize
+site_url: https://speakhuman.readthedocs.io
+repo_url: https://github.com/jackburrus/speakhuman
 theme:
   name: material
   palette:

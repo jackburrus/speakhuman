@@ -18,4 +18,4 @@ for docstrings.
 
 ## Localization
 
-See [README](https://github.com/jackburrus/humanize#localization).
+See [README](https://github.com/jackburrus/speakhuman#localization).

@@ -2,7 +2,7 @@
 
 Rust-accelerated fork of [humanize](https://github.com/python-humanize/humanize).
 
-[![MIT License](https://img.shields.io/github/license/jackburrus/humanize.svg)](LICENCE)
+[![MIT License](https://img.shields.io/github/license/jackburrus/speakhuman.svg)](LICENCE)
 
 This modest package contains various common humanization utilities, like turning a
 number into a fuzzy human-readable duration ("3 minutes ago") or into a human-readable
@@ -54,7 +54,7 @@ python3 -m pip install --upgrade speakhuman
 ### From source
 
 ```bash
-git clone https://github.com/jackburrus/humanize
+git clone https://github.com/jackburrus/speakhuman
 cd speakhuman
 python3 -m pip install -e .
 ```

@@ -6,10 +6,10 @@ requires = [
 
 [project]
 name = "speakhuman"
-description = "Python humanize utilities - Rust-accelerated fork of humanize"
+description = "Rust-accelerated fork of the Python humanize library"
 readme = "README.md"
 keywords = [
-  "humanize time size",
+  "speakhuman humanize time size",
 ]
 license = "MIT"
 license-files = [ "LICENCE" ]
@@ -39,10 +39,10 @@ optional-dependencies.tests = [
   "pytest",
   "pytest-cov",
 ]
-urls.Homepage = "https://github.com/jackburrus/humanize"
-urls."Issue tracker" = "https://github.com/jackburrus/humanize/issues"
-urls."Release notes" = "https://github.com/jackburrus/humanize/releases"
-urls.Source = "https://github.com/jackburrus/humanize"
+urls.Homepage = "https://github.com/jackburrus/speakhuman"
+urls."Issue tracker" = "https://github.com/jackburrus/speakhuman/issues"
+urls."Release notes" = "https://github.com/jackburrus/speakhuman/releases"
+urls.Source = "https://github.com/jackburrus/speakhuman"
 
 [tool.maturin]
 python-source = "src"

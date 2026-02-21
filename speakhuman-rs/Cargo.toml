@@ -2,7 +2,7 @@
 name = "speakhuman-core"
 version = "0.1.0"
 edition = "2021"
-description = "Speakhuman - humanizing functions for numbers, dates, times, and file sizes - Rust port of Python humanize"
+description = "Speakhuman - human-readable formatting for numbers, dates, times, and file sizes (Rust core)"
 license = "MIT"
 
 [lib]
